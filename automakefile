@@ -1,0 +1,124 @@
+#!/bin/bash
+
+makefile="Makefile"
+files=$1
+tableau=();
+PROJECT_DIR=""
+SOURCES_DIR=""
+HEADERS_DIR=""
+LIBS_DIR=""
+EXEC=""
+CC=""
+CFLAGS=""
+LDFLAGS=""
+BCK_DIR=""
+ZIP=""
+ZIPFLAGS=""
+UNZIP=""
+UNZIPFLAGS=""
+project=0
+
+    IFS=";"
+    project=$(cat $files | grep "^PROJECT_DIR" | wc -l)
+    if [[ $project == 0 ]]
+        then echo "Project dir not found" && exit 84;
+    elif [[ $# != 1 ]]
+        then echo "Bad number of argument" & exit 84;
+    fi
+    while read line
+        do
+    tableau=($line)
+    if [[ ${tableau[0]} == "PROJECT_DIR" ]]
+        then PROJECT_DIR=${tableau[1]}
+    elif [[ ${tableau[0]} == "SOURCES_DIR" ]]
+        then SOURCES_DIR=${tableau[1]}
+    elif [[ ${tableau[0]} == "HEADERS_DIR" ]]
+        then HEADERS_DIR=${tableau[1]}
+    elif [[ ${tableau[0]} == "LIBS_DIR" ]]
+        then LIBS_DIR=${tableau[1]}
+    elif [[ ${tableau[0]} == "EXEC" ]]
+        then EXEC=${tableau[1]}
+    elif [[ ${tableau[0]} == "CC" ]]
+        then CC=${tableau[1]}
+    elif [[ ${tableau[0]} == "CFLAGS" ]]
+        then CFLAGS=${tableau[1]}
+    elif [[ ${tableau[0]} == "LDFLAGS" ]]
+        then LDFLAGS=${tableau[1]}
+    elif [[ ${tableau[0]} == "BCK_DIR" ]]
+        then BCK_DIR=${tableau[1]}
+    elif [[ ${tableau[0]} == "ZIP" ]]
+        then ZIP=${tableau[1]}
+    elif [[ ${tableau[0]} == "ZIPFLAGS" ]]
+        then ZIPFLAGS=${tableau[1]}
+    elif [[ ${tableau[0]} == "UNZIP" ]]
+        then UNZIP=${tableau[1]}
+    elif [[ ${tableau[0]} == "UNZIPFLAGS" ]]
+        then UNZIPFLAGS=${tableau[1]}
+    fi
+done < $files
+
+if [ "$SOURCES_DIR" == "" ]
+    then exit 84
+fi
+
+    DIR="$PROJECT_DIR/Makefile"
+
+    echo -e "##\n## EPITECH PROJECT, 2019\n## Makefile\n## File description:\n## Makefile\n##\n" > $DIR
+
+if [ "$SOURCES_DIR" != "" ]
+    then    echo -e "SRC\t\t=\t\$(shell find $SOURCES_DIR -type f -name \"*.c\")\n" >> $DIR
+fi
+
+if [ "$SOURCES_DIR" != "" ]
+    then    echo -e "OBJ\t\t=\t\$(SRC:.c=.o)\n" >> $DIR
+fi
+
+if [ "$CFLAGS" != "" ]
+    then    echo -e "CFLAGS\t\t=\t$CFLAGS\n" >> $DIR
+fi
+
+if [ "$LDFLAGS" != "" ]
+    then    echo -e "LDFLAGS\t\t=\t$LDFLAGS\n" >> $DIR
+fi
+
+if [ "$LIBS_DIR" != "" ]
+    then    echo -e "LIB\t\t=\t$LIBS_DIR\n" >> $DIR
+fi
+
+if [ "$CC" == "" ]
+    then CC="gcc"
+fi
+
+if [ "$CC" != "" ]
+    then    echo -e "CC\t\t=\t$CC\n" >> $DIR
+fi
+
+if [ "$ZIP" != "" ]
+    then    echo -e "ZIP\t\t=\t$ZIP\n" >> $DIR
+fi
+
+if [ "$ZIPFLAGS" != "" ]
+    then    echo -e "ZIPFLAGS\t=\t$ZIPFLAGS\n" >> $DIR
+fi
+
+if [ "$UNZIP" != "" ]
+    then    echo -e "UNZIP\t\t=\t$UNZIP\n" >> $DIR
+fi
+
+if [ "$UNZIPFLAGS" != "" ]
+    then    echo -e "UNZIPFLAGS\t\t=\t$UNZIPFLAGS\n" >> $DIR
+fi
+
+if [ "$EXEC" != "" ]
+    then    echo -e "NAME\t\t=\t$EXEC\n" >> $DIR
+fi
+
+if [ "$EXEC" != "" ]
+    then    echo -e "\$(NAME)\t: \$(OBJ)\n\t\t\$(CC) -o \$(NAME) \$(OBJ) \$(CFLAGS) \$(LDFLAGS)\n" >> $DIR
+fi
+
+echo -e "all:\t\$(NAME)\n" >> $DIR
+echo -e "clean:\n\t\trm -f \$(OBJ)\n" >> $DIR
+echo -e "fclean: clean\n\t\trm -f \$(NAME)\n" >> $DIR
+echo -e "re:\tfclean all\n" >> $DIR
+echo -e ".PHONY: all re clean fclean" >> $DIR
